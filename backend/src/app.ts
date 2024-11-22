@@ -14,4 +14,4 @@ app.get('/', (req, res) => {
   res.send('Hello, TypeScript!');
 });
 
-export { app };
+export default app;
