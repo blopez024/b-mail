@@ -2,6 +2,9 @@
   "name": "bmail-backend",
   "version": "1.0.0",
   "description": "B-Mail Backend",
+  "author": "Bryan Lopez <bmlopez024@gmail.com",
+  "keywords": [],
+  "license": "ISC",
   "scripts": {
     "prestart": "docker-compose up -d",
     "dev": "nodemon src/server.ts",
@@ -9,9 +12,6 @@
     "start": "node dist/server.js",
     "poststart": "docker=compose down"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
@@ -20,14 +20,11 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.15.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.1",
-    "eslint": "^9.15.0",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3",
-    "typescript-eslint": "^8.15.0"
+    "typescript": "^5.6.3"
   }
 }
