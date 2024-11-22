@@ -1,0 +1,49 @@
+# Node.js
+node_modules/
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build and cache
+build/
+.cache/
+tmp/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Backend
+backend/node_modules/
+backend/dist/
+
+# Docker
+docker-compose.override.yml
+*.pid
+
+# OS-Specific Files
+.DS_Store
+Thumbs.db
+
+# Editor-specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Miscellaneous
+*.lock
