@@ -1,10 +1,13 @@
 {
-  "name": "backend",
+  "name": "bmail-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "B-Mail Backend",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prestart": "docker-compose up -d",
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "poststart": "docker=compose down"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +21,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
     "@types/node": "^22.9.1",
     "eslint": "^9.15.0",
     "nodemon": "^3.1.7",
