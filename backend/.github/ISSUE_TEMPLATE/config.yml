@@ -1,0 +1,11 @@
+default: bug_report.md
+labels:
+  bug: 'Bug'
+  enhancement: 'Feature Request'
+templates:
+  - name: 'Bug report'
+    description: 'Create a report to help us improve'
+    file: 'bug_report.md'
+  - name: 'Feature request'
+    description: 'Suggest an idea for this project'
+    file: 'feature_request.md'

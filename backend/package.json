@@ -6,10 +6,10 @@
   "keywords": [],
   "license": "ISC",
   "scripts": {
-    "prestart": "docker-compose up -d",
     "dev": "nodemon src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "prestart": "docker-compose up -d",
     "poststart": "docker-compose down",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
