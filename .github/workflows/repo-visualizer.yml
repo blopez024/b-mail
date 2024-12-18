@@ -14,13 +14,5 @@ jobs:
         uses: githubocto/repo-visualizer@main
         with:
           output_file: 'public/images/repo-visualize.svg'
-          excluded_paths: '.github,node_modules,.eslintignore,.eslintrc.json,*.md'
-      # - name: Commit and push generated file
-      #   run: |
-      #     git config user.name "GitHub Actions"
-      #     git config user.email "github-actions[bot]@users.noreply.github.com"
-      #     git add public/images/repo-visualize.svg
-      #     git commit -m "Repo visualizer: update diagram"
-      #     git push https://github.com/${{ github.repository }} HEAD:main
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          excluded_paths: '.github,node_modules,.eslintignore'
+          excluded_globs: '**/(*.{gitignore,json,md})'
