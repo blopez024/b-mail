@@ -223,7 +223,7 @@ Project Link: [https://github.com/blopez024/b-mail](https://github.com/blopez024
 <!-- License -->
 
 [license-shield]: https://img.shields.io/github/license/blopez024/b-mail.svg?style=for-the-badge
-[license-url]: https://github.com/blopez024/b-mail/blob/master/LICENSE.md
+[license-url]: https://github.com/blopez024/b-mail/blob/main/backend/LICENSE.md
 
 <!-- Linkedin -->
 
