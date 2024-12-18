@@ -1,0 +1,17 @@
+name: Repo Visualizer
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+jobs:
+  generate_visualization:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Repo Visualize
+        uses: githubocto/repo-visualizer@main
+        with:
+          output_file: 'public/images/repo-visualize.svg'
+          excluded_paths: '.github,node_modules,.eslintignore,.eslintrc.json,*.md'
