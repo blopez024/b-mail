@@ -196,6 +196,10 @@ Project Link: [https://github.com/blopez024/b-mail](https://github.com/blopez024
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Repo Hierarchy Visual
+
+![Visualization of this repo](./public/images/repo-visualize.svg)
+
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
