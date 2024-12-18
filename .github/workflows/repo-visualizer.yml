@@ -15,3 +15,17 @@ jobs:
         with:
           output_file: 'public/images/repo-visualize.svg'
           excluded_paths: '.github,node_modules,.eslintignore,.eslintrc.json,*.md'
+          # Step 3: Configure Git to use GitHub Actions bot for pushing changes
+      - name: Set up Git credentials
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Step 4: Commit and push the generated file
+      - name: Commit and push the visualization
+        run: |
+          git add public/images/repo-visualize.svg
+          git commit -m "Update repo visualization"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }} # Use the automatically generated token
