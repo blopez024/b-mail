@@ -22,7 +22,9 @@
     ],
     "no-console": "off",
     "no-underscore-dangle": "off",
-    "@typescript-eslint/no-unused-vars": "error"
+    "@typescript-eslint/no-unused-vars": "error",
+    "import/no-extraneous-dependencies": "off",
+    "import/prefer-default-export": ["off", { "target": "single" }] // Allow named exports in files with a single export
   },
   "settings": {
     "import/resolver": {
