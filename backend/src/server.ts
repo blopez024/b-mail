@@ -1,9 +1,19 @@
 import dotenv from 'dotenv';
-import app from './app';
+import { app } from './app';
 
+// Load environment variables from the .env file
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port http://localhost:${PORT}`);
+// Get the port from the environment variables
+const PORT = process.env.PORT || 3010;
+
+// Start the server
+app.listen(PORT, (err?: Error) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+
+  console.log(`Server Running on port ${PORT}`);
+  console.log(`API Testing UI: http://localhost:${PORT}/v0/api-docs/`);
 });
