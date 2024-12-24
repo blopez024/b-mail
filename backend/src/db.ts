@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
+import { Mail, EmailInfo, MailboxEmails } from './types';
 
 // Load environment variables from the .env file
 dotenv.config();
@@ -42,4 +43,82 @@ const selectDummy = async (): Promise<string> => {
   }
 };
 
-export { selectDummy };
+// Function to build the query and its values based on mailbox filter
+const buildSelectMailQuery = (mailbox?: string) => {
+  // Create the query object
+  let select = 'SELECT id, mailbox, mail FROM mail';
+  // Add the mailbox as a parameter if it is provided
+  const values: (string | undefined)[] = [];
+
+  // Add the mailbox filter if provided
+  if (mailbox) {
+    select += ' WHERE mailbox = $1';
+    values.push(mailbox);
+  }
+
+  // Return the query object
+  return { text: select, values };
+};
+
+// Function to group emails by mailbox name
+const groupEmailsByMailbox = (rows: { id: number; mailbox: string; mail: Mail }[]):
+  Record<string, EmailInfo[]> => rows.reduce((acc, row) => {
+  // Create an EmailInfo object from the row
+  const emailInfo: EmailInfo = {
+    id: row.id,
+    'from-name': row.mail.from.name,
+    'from-email': row.mail.from.email,
+    'to-name': row.mail.to.name,
+    'to-email': row.mail.to.email,
+    subject: row.mail.subject,
+    sent: row.mail.sent,
+    received: row.mail.received,
+  };
+
+  // Add the email to the mailbox
+  acc[row.mailbox] = acc[row.mailbox] || [];
+  acc[row.mailbox].push(emailInfo);
+
+  // Return the accumulator
+  return acc;
+}, {} as Record<string, EmailInfo[]>);
+
+// Select all mail from the mail table with an optional mailbox filter
+const selectAllMail = async (mailbox?: string): Promise<MailboxEmails[]> => {
+  try {
+    // Create the query object
+    const query = buildSelectMailQuery(mailbox);
+
+    // Execute the query and return the mail
+    const { rows }: {
+      rows: { id: number; mailbox: string; mail: Mail }[]
+    } = await pool.query(query);
+
+    // Group the emails by mailbox
+    const emailsByMailbox = groupEmailsByMailbox(rows);
+
+    // Convert the emails by mailbox object to an array
+    const emails: MailboxEmails[] = Object.entries(emailsByMailbox).map(([name, mail]) => ({
+      name,
+      mail,
+    }));
+
+    // Return the emails if any were found
+    if (emails.length === 0) {
+      return []; // No emails found
+    }
+    return emails;
+  } catch (error) {
+    // Catch any errors and log them
+    console.error('Error querying the database:', error);
+    throw new Error('Database query failed');
+  }
+};
+
+const mailboxExists = async (mailbox: string): Promise<boolean> => {
+  const query = 'SELECT mailbox FROM mail WHERE mailbox = $1';
+  const { rows } = await pool.query(query, [mailbox]);
+  return rows.length > 0;
+};
+
+export { selectDummy, selectAllMail, mailboxExists };

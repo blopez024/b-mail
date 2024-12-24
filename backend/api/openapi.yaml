@@ -25,6 +25,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /mail:
+    get:
+      parameters:
+        - name: mailbox
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '[A-Za-z]'
+      description: Returns all EMail
+      responses:
+        200:
+          description: EMail Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailBoxes'
+        404:
+          description: Mailbox with the specified name was not found.
+
+    post:
+      description: Creates a new mail
+      requestBody:
+        description: EMail to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMail'
+      responses:
+        201:
+          description: Application response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mail'
+        400:
+          description: Unexpected properties.
+  /mail/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b'
+      description: Return EMail with the given id
+      responses:
+        200:
+          description: EMail Response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mail'
+        404:
+          description: EMail with the specified id was not found.
+
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b'
+        - name: mailbox
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '[A-Za-z]'
+      description: Moves email with the specified id to the specified mailbox.
+      responses:
+        204:
+          description: Fullfilled request.
+        404:
+          description: EMail with the specified id was not found.
+        409:
+          description: Email not in sent mailbox.
 
 components:
   schemas:
@@ -45,3 +125,88 @@ components:
       properties:
         message:
           type: string
+    Mail:
+      type: object
+      properties:
+        id:
+          type: string
+        from-name:
+          type: string
+        from-email:
+          type: string
+        to-name:
+          type: string
+        to-email:
+          type: string
+        subject:
+          type: string
+        sent:
+          type: string
+        received:
+          type: string
+        content:
+          type: string
+      required:
+        - id
+        - from-name
+        - from-email
+        - to-name
+        - to-email
+        - subject
+        - sent
+        - received
+        - content
+    MailBox:
+      type: object
+      properties:
+        name:
+          type: string
+        mail:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              from-name:
+                type: string
+              from-email:
+                type: string
+              to-name:
+                type: string
+              to-email:
+                type: string
+              subject:
+                type: string
+              sent:
+                type: string
+              received:
+                type: string
+      required:
+        - name
+        - mail
+    MailBoxes:
+      type: array
+      items:
+        $ref: '#/components/schemas/MailBox'
+    NewMail:
+      type: object
+      properties:
+        to:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+          required:
+            - name
+            - email
+        subject:
+          type: string
+        content:
+          type: string
+      required:
+        - to
+        - subject
+        - content
