@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
 import { selectAllMail, mailboxExists } from './db';
 
-// Get all mail from the mail table
-const getAll = async (req: Request, res: Response): Promise<void> => {
+/**
+ * Get all mail from the mail table
+ * @param {Request} req
+ * @param {Response} res
+ */
+const getMailbox = async (req: Request, res: Response): Promise<void> => {
   try {
     // Get the mailbox from the query parameters
     const mailbox = req.query.mailbox as string;
@@ -11,6 +15,7 @@ const getAll = async (req: Request, res: Response): Promise<void> => {
     if (!mailboxExists(mailbox)) {
       res.status(404).send();
     }
+
     res.status(200).json(mail);
   } catch (error) {
     // Log the error
@@ -26,5 +31,5 @@ const postMail = async (req: Request, res: Response): Promise<void> => { };
 const moveMail = async (req: Request, res: Response): Promise<void> => { };
 
 export {
-  getAll, getByID, postMail, moveMail,
+  getMailbox, getByID, postMail, moveMail,
 };

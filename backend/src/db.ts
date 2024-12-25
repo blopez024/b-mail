@@ -23,7 +23,10 @@ const pool = new Pool({
   password: process.env.POSTGRES_PASSWORD,
 });
 
-// Select the first row from the dummy table
+/**
+ * Select the first row from the dummy table
+ * @returns {Promise<string>} The created date from the dummy table
+ */
 const selectDummy = async (): Promise<string> => {
   try {
     // Create the query object
@@ -43,7 +46,22 @@ const selectDummy = async (): Promise<string> => {
   }
 };
 
-// Function to build the query and its values based on mailbox filter
+/**
+ * Check if a mailbox exists in the mail table
+ * @param {string} mailbox - The mailbox to check
+ * @returns {Promise<boolean>} True if the mailbox exists, false otherwise
+ */
+const mailboxExists = async (mailbox: string): Promise<boolean> => {
+  const query = 'SELECT mailbox FROM mail WHERE mailbox = $1';
+  const { rows } = await pool.query(query, [mailbox]);
+  return rows.length > 0;
+};
+
+/**
+ * Build the query object for selecting mail from the mail table
+ * @param {string?} mailbox - The mailbox to filter by
+ * @returns {text: string, values: (string | undefined)[]} The query object
+ */
 const buildSelectMailQuery = (mailbox?: string) => {
   // Create the query object
   let select = 'SELECT id, mailbox, mail FROM mail';
@@ -61,6 +79,12 @@ const buildSelectMailQuery = (mailbox?: string) => {
 };
 
 // Function to group emails by mailbox name
+/**
+ * Group emails by mailbox name
+ * @param {Array<{ id: number, mailbox: string, mail: Mail }>} rows - The rows to group
+ * @returns {Record<string, EmailInfo[]>} An object with mailbox names as keys
+ * and EmailInfo arrays as values
+ */
 const groupEmailsByMailbox = (rows: { id: number; mailbox: string; mail: Mail }[]):
   Record<string, EmailInfo[]> => rows.reduce((acc, row) => {
   // Create an EmailInfo object from the row
@@ -83,7 +107,11 @@ const groupEmailsByMailbox = (rows: { id: number; mailbox: string; mail: Mail }[
   return acc;
 }, {} as Record<string, EmailInfo[]>);
 
-// Select all mail from the mail table with an optional mailbox filter
+/**
+ * Select all mail from the mail table with an optional mailbox filter
+ * @param {string?} mailbox
+ * @returns {Promise<MailboxEmails[]>} An array of MailboxEmails objects
+ */
 const selectAllMail = async (mailbox?: string): Promise<MailboxEmails[]> => {
   try {
     // Create the query object
@@ -113,12 +141,6 @@ const selectAllMail = async (mailbox?: string): Promise<MailboxEmails[]> => {
     console.error('Error querying the database:', error);
     throw new Error('Database query failed');
   }
-};
-
-const mailboxExists = async (mailbox: string): Promise<boolean> => {
-  const query = 'SELECT mailbox FROM mail WHERE mailbox = $1';
-  const { rows } = await pool.query(query, [mailbox]);
-  return rows.length > 0;
 };
 
 export { selectDummy, selectAllMail, mailboxExists };
