@@ -2,20 +2,28 @@ import { Request, Response } from 'express';
 import { selectAllMail, mailboxExists } from './db';
 
 /**
- * Get all mail from the mail table
- * @param {Request} req
- * @param {Response} res
+ * Get all mail from the mailbox
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
  */
 const getMailbox = async (req: Request, res: Response): Promise<void> => {
   try {
     // Get the mailbox from the query parameters
     const mailbox = req.query.mailbox as string;
-    const mail = await selectAllMail(mailbox);
 
-    if (!mailboxExists(mailbox)) {
-      res.status(404).send();
+    // Check if mailbox is not null
+    if (mailbox) {
+      // Check if the mailbox exists
+      const exists = await mailboxExists(mailbox);
+      // If the mailbox does not exist, return a 404 response
+      if (!exists) {
+        res.status(404).send();
+        return;
+      }
     }
 
+    // Get all mail from the mailbox
+    const mail = await selectAllMail(mailbox);
     res.status(200).json(mail);
   } catch (error) {
     // Log the error
@@ -26,10 +34,10 @@ const getMailbox = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const getByID = async (req: Request, res: Response): Promise<void> => { };
-const postMail = async (req: Request, res: Response): Promise<void> => { };
-const moveMail = async (req: Request, res: Response): Promise<void> => { };
+// const getByID = async (req: Request, res: Response): Promise<void> => { };
+// const postMail = async (req: Request, res: Response): Promise<void> => { };
+// const moveMail = async (req: Request, res: Response): Promise<void> => { };
 
 export {
-  getMailbox, getByID, postMail, moveMail,
+  getMailbox, // getByID, postMail, moveMail,
 };

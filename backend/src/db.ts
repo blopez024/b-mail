@@ -24,29 +24,6 @@ const pool = new Pool({
 });
 
 /**
- * Select the first row from the dummy table
- * @returns {Promise<string>} The created date from the dummy table
- */
-const selectDummy = async (): Promise<string> => {
-  try {
-    // Create the query object
-    const select = 'SELECT * FROM dummy';
-    const query = {
-      text: select,
-      values: [],
-    };
-
-    // Execute the query and return the created date
-    const { rows } = await pool.query(query);
-    return rows[0]?.created || 'Unknown';
-  } catch (error) {
-    // Catch any errors and log them
-    console.error('Error querying the database:', error);
-    throw new Error('Database query failed');
-  }
-};
-
-/**
  * Check if a mailbox exists in the mail table
  * @param {string} mailbox - The mailbox to check
  * @returns {Promise<boolean>} True if the mailbox exists, false otherwise
@@ -87,25 +64,25 @@ const buildSelectMailQuery = (mailbox?: string) => {
  */
 const groupEmailsByMailbox = (rows: { id: number; mailbox: string; mail: Mail }[]):
   Record<string, EmailInfo[]> => rows.reduce((acc, row) => {
-  // Create an EmailInfo object from the row
-  const emailInfo: EmailInfo = {
-    id: row.id,
-    'from-name': row.mail.from.name,
-    'from-email': row.mail.from.email,
-    'to-name': row.mail.to.name,
-    'to-email': row.mail.to.email,
-    subject: row.mail.subject,
-    sent: row.mail.sent,
-    received: row.mail.received,
-  };
+    // Create an EmailInfo object from the row
+    const emailInfo: EmailInfo = {
+      id: row.id,
+      'from-name': row.mail.from.name,
+      'from-email': row.mail.from.email,
+      'to-name': row.mail.to.name,
+      'to-email': row.mail.to.email,
+      subject: row.mail.subject,
+      sent: row.mail.sent,
+      received: row.mail.received,
+    };
 
-  // Add the email to the mailbox
-  acc[row.mailbox] = acc[row.mailbox] || [];
-  acc[row.mailbox].push(emailInfo);
+    // Add the email to the mailbox
+    acc[row.mailbox] = acc[row.mailbox] || [];
+    acc[row.mailbox].push(emailInfo);
 
-  // Return the accumulator
-  return acc;
-}, {} as Record<string, EmailInfo[]>);
+    // Return the accumulator
+    return acc;
+  }, {} as Record<string, EmailInfo[]>);
 
 /**
  * Select all mail from the mail table with an optional mailbox filter
@@ -143,4 +120,4 @@ const selectAllMail = async (mailbox?: string): Promise<MailboxEmails[]> => {
   }
 };
 
-export { selectDummy, selectAllMail, mailboxExists };
+export { mailboxExists, selectAllMail };

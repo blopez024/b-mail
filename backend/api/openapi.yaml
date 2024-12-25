@@ -9,22 +9,6 @@ servers:
   - url: http://localhost:3010/v0
 
 paths:
-  /dummy:
-    get:
-      description: Dummy Endpoint
-      responses:
-        200:
-          description: Succesful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DummyResponse'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /mail:
     get:
       parameters:
@@ -108,23 +92,6 @@ paths:
 
 components:
   schemas:
-    Error:
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-
-    DummyResponse:
-      required:
-        - message
-      properties:
-        message:
-          type: string
     Mail:
       type: object
       properties:
