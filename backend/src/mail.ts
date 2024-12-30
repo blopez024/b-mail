@@ -9,12 +9,12 @@ import { selectAllMail, mailboxExists } from './db';
 const getMailbox = async (req: Request, res: Response): Promise<void> => {
   try {
     // Get the mailbox from the query parameters
-    const mailbox = req.query.mailbox as string;
+    const mailboxName = req.query.mailbox as string;
 
     // Check if mailbox is not null
-    if (mailbox) {
+    if (mailboxName) {
       // Check if the mailbox exists
-      const exists = await mailboxExists(mailbox);
+      const exists = await mailboxExists(mailboxName);
       // If the mailbox does not exist, return a 404 response
       if (!exists) {
         res.status(404).send();
@@ -23,7 +23,7 @@ const getMailbox = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Get all mail from the mailbox
-    const mail = await selectAllMail(mailbox);
+    const mail = await selectAllMail(mailboxName);
     res.status(200).json(mail);
   } catch (error) {
     // Log the error

@@ -16,21 +16,21 @@ requiredEnvVars.forEach((envVar) => {
 
 // Create a new pool for connecting to the database server
 const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  database: process.env.POSTGRES_DB,
   user: process.env.POSTGRES_USER,
+  host: 'localhost',
+  database: process.env.POSTGRES_DB,
   password: process.env.POSTGRES_PASSWORD,
+  port: 5432,
 });
 
 /**
  * Check if a mailbox exists in the mail table
- * @param {string} mailbox - The mailbox to check
+ * @param {string} mailboxName - The mailbox to check
  * @returns {Promise<boolean>} True if the mailbox exists, false otherwise
  */
-const mailboxExists = async (mailbox: string): Promise<boolean> => {
+const mailboxExists = async (mailboxName: string): Promise<boolean> => {
   const query = 'SELECT mailbox FROM mail WHERE mailbox = $1';
-  const { rows } = await pool.query(query, [mailbox]);
+  const { rows } = await pool.query(query, [mailboxName]);
   return rows.length > 0;
 };
 
@@ -62,27 +62,28 @@ const buildSelectMailQuery = (mailbox?: string) => {
  * @returns {Record<string, EmailInfo[]>} An object with mailbox names as keys
  * and EmailInfo arrays as values
  */
-const groupEmailsByMailbox = (rows: { id: number; mailbox: string; mail: Mail }[]):
-  Record<string, EmailInfo[]> => rows.reduce((acc, row) => {
-    // Create an EmailInfo object from the row
-    const emailInfo: EmailInfo = {
-      id: row.id,
-      'from-name': row.mail.from.name,
-      'from-email': row.mail.from.email,
-      'to-name': row.mail.to.name,
-      'to-email': row.mail.to.email,
-      subject: row.mail.subject,
-      sent: row.mail.sent,
-      received: row.mail.received,
-    };
+const groupEmailsByMailbox = (
+  rows: { id: number; mailbox: string; mail: Mail }[],
+): Record<string, EmailInfo[]> => rows.reduce((acc, row) => {
+  // Create an EmailInfo object from the row
+  const emailInfo: EmailInfo = {
+    id: row.id,
+    'from-name': row.mail.from.name,
+    'from-email': row.mail.from.email,
+    'to-name': row.mail.to.name,
+    'to-email': row.mail.to.email,
+    subject: row.mail.subject,
+    sent: row.mail.sent,
+    received: row.mail.received,
+  };
 
-    // Add the email to the mailbox
-    acc[row.mailbox] = acc[row.mailbox] || [];
-    acc[row.mailbox].push(emailInfo);
+  // Add the email to the mailbox
+  acc[row.mailbox] = acc[row.mailbox] || [];
+  acc[row.mailbox].push(emailInfo);
 
-    // Return the accumulator
-    return acc;
-  }, {} as Record<string, EmailInfo[]>);
+  // Return the accumulator
+  return acc;
+}, {} as Record<string, EmailInfo[]>);
 
 /**
  * Select all mail from the mail table with an optional mailbox filter
@@ -95,18 +96,22 @@ const selectAllMail = async (mailbox?: string): Promise<MailboxEmails[]> => {
     const query = buildSelectMailQuery(mailbox);
 
     // Execute the query and return the mail
-    const { rows }: {
-      rows: { id: number; mailbox: string; mail: Mail }[]
+    const {
+      rows,
+    }: {
+      rows: { id: number; mailbox: string; mail: Mail }[];
     } = await pool.query(query);
 
     // Group the emails by mailbox
     const emailsByMailbox = groupEmailsByMailbox(rows);
 
     // Convert the emails by mailbox object to an array
-    const emails: MailboxEmails[] = Object.entries(emailsByMailbox).map(([name, mail]) => ({
-      name,
-      mail,
-    }));
+    const emails: MailboxEmails[] = Object.entries(emailsByMailbox).map(
+      ([name, mail]) => ({
+        name,
+        mail,
+      }),
+    );
 
     // Return the emails if any were found
     if (emails.length === 0) {
