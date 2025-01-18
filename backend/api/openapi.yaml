@@ -1,16 +1,30 @@
 openapi: '3.0.0'
 
 info:
-  description: B-Mail API Backend
-  version: 1.0.0
   title: B-Mail API Backend
+  description: B-Mail API Backend
+  contact:
+    email: bmlopez024@gmail.com
+  license:
+    name: MIT
+    url: https://github.com/blopez024/b-mail/blob/main/LICENSE.md
+  version: 1.0.0
 
 servers:
   - url: http://localhost:3010/v0
 
+tags:
+  - name: mail
+    description: Operations about mail
+    externalDocs:
+      description: Find out more
+      url: https://swagger.io/specification/
+
 paths:
   /mail:
     get:
+      tags:
+        - mail
       parameters:
         - name: mailbox
           in: query
@@ -28,8 +42,12 @@ paths:
                 $ref: '#/components/schemas/MailBoxes'
         404:
           description: Mailbox with the specified name was not found.
+        500:
+          description: Internal Server Error
 
     post:
+      tags:
+        - mail
       description: Creates a new mail
       requestBody:
         description: EMail to add
@@ -47,8 +65,13 @@ paths:
                 $ref: '#/components/schemas/Mail'
         400:
           description: Unexpected properties.
+        500:
+          description: Internal Server Error
+
   /mail/{id}:
     get:
+      tags:
+        - mail
       parameters:
         - name: id
           in: path
@@ -66,8 +89,12 @@ paths:
                 $ref: '#/components/schemas/Mail'
         404:
           description: EMail with the specified id was not found.
+        500:
+          description: Internal Server Error
 
     put:
+      tags:
+        - mail
       parameters:
         - name: id
           in: path
@@ -89,30 +116,38 @@ paths:
           description: EMail with the specified id was not found.
         409:
           description: Email not in sent mailbox.
+        500:
+          description: Internal Server Error
 
 components:
   schemas:
-    Mail:
+    MailInfo:
       type: object
       properties:
         id:
           type: string
+          description: Unique identifier for the email
         from-name:
           type: string
+          description: Name of the sender
         from-email:
           type: string
+          description: Email address of the sender
         to-name:
           type: string
+          description: Name of the recipient
         to-email:
           type: string
+          description: Email address of the recipient
         subject:
           type: string
+          description: Subject of the email
         sent:
           type: string
+          description: Sent timestamp
         received:
           type: string
-        content:
-          type: string
+          description: Received timestamp
       required:
         - id
         - from-name
@@ -122,40 +157,67 @@ components:
         - subject
         - sent
         - received
-        - content
+
+    Mail:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the email
+        from-name:
+          type: string
+          description: Name of the sender
+        from-email:
+          type: string
+          description: Email address of the sender
+        to-name:
+          type: string
+          description: Name of the recipient
+        to-email:
+          type: string
+          description: Email address of the recipient
+        subject:
+          type: string
+          description: Subject of the email
+        sent:
+          type: string
+          description: Sent timestamp
+        received:
+          type: string
+          description: Received timestamp
+        content:
+          type: string
+          description: Content of the email
+      required:
+        - id
+        - from-name
+        - from-email
+        - to-name
+        - to-email
+        - subject
+        - sent
+        - received
+        # - content
+
     MailBox:
       type: object
       properties:
         name:
           type: string
+          description: Name of the mailbox
         mail:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-              from-name:
-                type: string
-              from-email:
-                type: string
-              to-name:
-                type: string
-              to-email:
-                type: string
-              subject:
-                type: string
-              sent:
-                type: string
-              received:
-                type: string
+            $ref: '#/components/schemas/Mail'
       required:
         - name
         - mail
+
     MailBoxes:
       type: array
       items:
         $ref: '#/components/schemas/MailBox'
+
     NewMail:
       type: object
       properties:
@@ -164,16 +226,28 @@ components:
           properties:
             name:
               type: string
+              description: Name of the recipient
             email:
               type: string
+              description: Email address of the recipient
           required:
             - name
             - email
         subject:
           type: string
+          description: Subject of the email
         content:
           type: string
+          description: Content of the email
       required:
         - to
         - subject
         - content
+
+    # Email:
+    #   type: object
+    #   properties:
+    #     recipient:
+    #       $ref: '#/components/schemas/Person'
+    #     sender:
+    #       $ref: '#/components/schemas/Person'

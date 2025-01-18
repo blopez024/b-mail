@@ -125,4 +125,27 @@ const selectAllMail = async (mailbox?: string): Promise<MailboxEmails[]> => {
   }
 };
 
-export { mailboxExists, selectAllMail };
+/**
+ * Select a mail object by ID
+ * @param {string} mailID - The ID of the mail to select
+ * @returns {Promise<Mail>} The mail object with the given ID
+ */
+const selectMailByID = async (mailID: string): Promise<Mail> => {
+  try {
+    const select = 'SELECT id, mail FROM mail WHERE id = $1';
+    const query = { text: select, values: [mailID] };
+    const { rows } = await pool.query(query);
+    if (rows.length === 0) {
+      throw new Error('Mail not found');
+    }
+    console.log('-------------------');
+    console.log(rows);
+    console.log('-------------------');
+    return rows[0];
+  } catch (error) {
+    console.error('Error querying the database:', error);
+    throw new Error('Database query failed');
+  }
+};
+
+export { mailboxExists, selectAllMail, selectMailByID };

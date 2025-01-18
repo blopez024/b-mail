@@ -1,0 +1,341 @@
+openapi: '3.0.0'
+
+info:
+  title: B-Mail API
+  description: This is a server for the B-Mail API Backend.
+  contact:
+    name: Bryan
+    email: bmlopez024@gmail.com
+  license:
+    name: MIT
+    url: https://github.com/blopez024/b-mail/blob/main/LICENSE.md
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3010/v0
+    description: Development Server
+  - url: http://localhost:3010/v1
+    description: Production Server
+
+tags:
+  - name: mail
+    description: Operations about mail
+    externalDocs:
+      description: Find out more
+      url: https://github.com/blopez024/b-mail/issues/13
+
+paths:
+  /mail:
+    get:
+      tags:
+        - mail
+      summary: Get emails
+      description: Returns all mail if no mailbox is specified, otherwise returns all mail in the specified mailbox.
+      operationId: getMail
+      parameters:
+        - name: mailbox
+          in: query
+          description: Mailbox name
+          required: false
+          explode: true
+          schema:
+            type: string
+            pattern: '[A-Za-z]'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mailboxes'
+              examples:
+                inbox:
+                  $ref: '#/components/examples/inbox mailbox'
+                sent:
+                  $ref: '#/components/examples/sent mailbox'
+                all mailboxes:
+                  $ref: '#/components/examples/all mailboxes'
+
+        '404':
+          description: Mailbox not found
+        '500':
+          description: Internal Server Error
+
+    post:
+      tags:
+        - mail
+      summary: Add a new email to the system
+      description: Add a new email to the system
+      operationId: addMail
+      requestBody:
+        description: Creates a new email
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMail'
+        required: true
+      responses:
+        '201':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+        '400':
+          description: Invalid Input
+        '500':
+          description: Internal Server Error
+
+  /mail/{id}:
+    get:
+      tags:
+        - mail
+      summary: Get mail by ID
+      description: Returns a single EMail
+      operationId: getMailById
+      parameters:
+        - name: id
+          in: path
+          description: ID of the EMail to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: EMail Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+        '404':
+          description: EMail with the specified ID was not found.
+        '500':
+          description: Internal Server Error
+
+    put:
+      tags:
+        - mail
+      summary: Update an existing email
+      parameters:
+        - name: id
+          in: path
+          description: ID of the EMail to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: mailbox
+          in: query
+          required: true
+          explode: true
+          schema:
+            type: string
+            pattern: '[A-Za-z]'
+      description: Moves email with the specified id to the specified mailbox.
+      responses:
+        '204':
+          description: Fullfilled request.
+        '404':
+          description: EMail with the specified id was not found.
+        '409':
+          description: Email not in sent mailbox.
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    Participant:
+      required:
+        - name
+        - email
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+
+    Email:
+      required:
+        - id
+        - from
+        - to
+        - subject
+        - sent
+        - received
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        from:
+          $ref: '#/components/schemas/Participant'
+        to:
+          $ref: '#/components/schemas/Participant'
+        subject:
+          type: string
+          # example: 'Welcome to B-Mail!'
+        sent:
+          type: string
+          format: date-time
+        received:
+          type: string
+          format: date-time
+        content:
+          type: string
+          # example: 'Get started by sending your first email!'
+
+    Mailbox:
+      required:
+        - name
+        - emails
+      type: object
+      properties:
+        name:
+          type: string
+          # example: 'inbox'
+        emails:
+          type: array
+          items:
+            $ref: '#/components/schemas/Email'
+
+    Mailboxes:
+      type: array
+      items:
+        $ref: '#/components/schemas/Mailbox'
+
+    NewMail:
+      required:
+        - to
+        - subject
+        - content
+      type: object
+      properties:
+        to:
+          $ref: '#/components/schemas/Participant'
+        subject:
+          type: string
+          # example: 'Welcome to B-Mail!'
+        content:
+          type: string
+          # example: 'Get started by sending your first email!'
+
+  # https://stackoverflow.com/questions/55368560/swagger-reusing-examples-showing-weird-ref-element
+  # $ref do not work with examples in OpenAPI 3.0.0, as a workaround, I must write the examples in full.
+  examples:
+    all mailboxes:
+      value:
+        - name: 'sent'
+          emails:
+            - id: '3fa85f64-5717-4562-b3fc-2c963f66afa9'
+              from:
+                name: 'John'
+                email: 'john@bmail.com'
+              to:
+                name: 'Shandra Rheam'
+                email: 'srheam0@myspace.com'
+              subject: 'Compatible demand-driven definition'
+              sent: '2020-11-14T17:09:17Z'
+              received: '2020-11-17T23:17:19Z'
+              content: 'Cras non velit nec nisi vulputate nonummy.'
+            - id: '3fa85f64-5717-4562-b3fc-2c963f66afaa'
+              from:
+                name: 'John'
+                email: 'john@bmail.com'
+              to:
+                name: 'Zerk Jefferys'
+                email: 'zjefferys1@vimeo.com'
+              subject: 'Distributed bandwidth-monitored conglomeration'
+              sent: '2020-06-08T12:55:45Z'
+              received: '2020-06-18T18:43:27Z'
+              content: 'Proin interdum mauris non ligula pellentesque ultrices'
+        - name: 'inbox'
+          emails:
+            - id: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+              from:
+                name: 'John'
+                email: 'john@bmail.com'
+              to:
+                name: 'Jane'
+                email: 'jane@bmail.com'
+              subject: 'Welcome to B-Mail!'
+              sent: '2025-01-01T12:00:00Z'
+              received: '2025-01-01T12:01:00Z'
+              content: 'Get started by sending your first email!'
+            - id: '3fa85f64-5717-4562-b3fc-2c963f66afa7'
+              from:
+                name: 'John'
+                email: 'john@bmail.com'
+              to:
+                name: 'Nessie Doogood'
+                email: 'ndoogood0@clickbank.net'
+              subject: 'Integrated optimizing moderator'
+              sent: '2020-09-14T14:48:28Z'
+              received: '2020-09-02T09:50:17Z'
+              content: 'Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue.'
+
+    sent mailbox:
+      value:
+        name: 'sent'
+        emails:
+          - id: '3fa85f64-5717-4562-b3fc-2c963f66afa9'
+            from:
+              name: 'John'
+              email: 'john@bmail.com'
+            to:
+              name: 'Shandra Rheam'
+              email: 'srheam0@myspace.com'
+            subject: 'Compatible demand-driven definition'
+            sent: '2020-11-14T17:09:17Z'
+            received: '2020-11-17T23:17:19Z'
+            content: 'Cras non velit nec nisi vulputate nonummy.'
+          - id: '3fa85f64-5717-4562-b3fc-2c963f66afaa'
+            from:
+              name: 'John'
+              email: 'john@bmail.com'
+            to:
+              name: 'Zerk Jefferys'
+              email: 'zjefferys1@vimeo.com'
+            subject: 'Distributed bandwidth-monitored conglomeration'
+            sent: '2020-06-08T12:55:45Z'
+            received: '2020-06-18T18:43:27Z'
+            content: 'Proin interdum mauris non ligula pellentesque ultrices'
+
+    inbox mailbox:
+      value:
+        name: 'inbox'
+        emails:
+          - id: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+            from:
+              name: 'John'
+              email: 'john@bmail.com'
+            to:
+              name: 'Jane'
+              email: 'jane@bmail.com'
+            subject: 'Welcome to B-Mail!'
+            sent: '2025-01-01T12:00:00Z'
+            received: '2025-01-01T12:01:00Z'
+            content: 'Get started by sending your first email!'
+          - id: '3fa85f64-5717-4562-b3fc-2c963f66afa7'
+            from:
+              name: 'Nessie Doogood'
+              email: 'ndoogood0@clickbank.net'
+            to:
+              name: 'John'
+              email: 'john@bmail.com'
+            subject: 'Integrated optimizing moderator'
+            sent: '2020-09-14T14:48:28Z'
+            received: '2020-09-02T09:50:17Z'
+            content: 'Donec diam neque, vestibulum eget, vulputate ut, ultrices vel, augue.'
+
+    #
+    #
+    #
+  # parameters:
+  # requestBodies:
+  # responses:
+# https://stackoverflow.com/questions/55368560/swagger-reusing-examples-showing-weird-ref-element
+# notes:
+#   e

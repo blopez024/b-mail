@@ -7,7 +7,7 @@ import * as OpenApiValidator from 'express-openapi-validator';
 import cors from 'cors';
 import helmet from 'helmet';
 import {
-  getMailbox, // getByID, postMail, moveMail,
+  getMailbox, getByID, // postMail, moveMail,
 } from './mail';
 
 // Custom error interface
@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Load the API specification
-const apiSpec = path.join(__dirname, '../api/openapi.yaml');
+const apiSpec = path.join(__dirname, '../api/openapi.yml');
 const apidoc = yaml.load(fs.readFileSync(apiSpec, 'utf8')) as Record<
   string,
   unknown
@@ -50,13 +50,13 @@ app.use(
 
 // Route for the mail endpoints
 app.get('/v0/mail', getMailbox);
-// app.get('/v0/mail/:id', getByID);
+app.get('/v0/mail/:id', getByID);
 // app.post('/v0/mail', postMail);
 // app.put('/v0/mail/:id', moveMail);
 
 // Error handling middleware
 app.use((err: CustomError, req: Request, res: Response) => {
-  console.error(err); // Log the error
+  console.error(err);
   res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors || [],
