@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Load the API specification
-const apiSpec = path.join(__dirname, '../api/openapi.yml');
+const apiSpec = path.join(__dirname, '../api/openapi.yaml');
 const apidoc = yaml.load(fs.readFileSync(apiSpec, 'utf8')) as Record<
   string,
   unknown
