@@ -8,18 +8,21 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "prestart": "docker-compose up -d",
+    "start": "nodemon src/server.ts",
+    "poststart": "docker-compose down",
+    "pretest": "docker-compose up -d",
+    "test": "jest",
+    "posttest": "docker-compose down",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down"
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "docker-compose": "^1.1.0",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "express-openapi-validator": "^5.3.9",
     "helmet": "^8.0.0",
     "js-yaml": "^4.1.0",
@@ -30,17 +33,17 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.9.1",
+    "@types/node": "^22.10.2",
     "@types/pg": "^8.11.10",
     "@types/swagger-ui-express": "^4.1.7",
-    "@typescript-eslint/eslint-plugin": "^8.15.0",
-    "@typescript-eslint/parser": "^8.15.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
     "eslint": "^8",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-node": "^11.1.0",
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   }
 }

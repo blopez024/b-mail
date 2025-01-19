@@ -6,7 +6,9 @@ import swaggerUi from 'swagger-ui-express';
 import * as OpenApiValidator from 'express-openapi-validator';
 import cors from 'cors';
 import helmet from 'helmet';
-import { get } from './dummy';
+import {
+  getMailbox, getByID, // postMail, moveMail,
+} from './mail';
 
 // Custom error interface
 interface CustomError extends Error {
@@ -46,12 +48,15 @@ app.use(
   }),
 );
 
-// Route for the dummy endpoint
-app.get('/v0/dummy', get);
+// Route for the mail endpoints
+app.get('/v0/mail', getMailbox);
+app.get('/v0/mail/:id', getByID);
+// app.post('/v0/mail', postMail);
+// app.put('/v0/mail/:id', moveMail);
 
 // Error handling middleware
 app.use((err: CustomError, req: Request, res: Response) => {
-  console.error(err); // Log the error
+  console.error(err);
   res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors || [],
